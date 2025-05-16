@@ -12,6 +12,13 @@ def initialize_session_state():
     
     if "auth_attempts" not in st.session_state:
         st.session_state.auth_attempts = 0
+        
+    # Chat related session state
+    if "chat_messages" not in st.session_state:
+        st.session_state.chat_messages = []
+    
+    if "current_survey_responses" not in st.session_state:
+        st.session_state.current_survey_responses = {}
 
 def admin_login():
     """Handle admin login functionality"""
