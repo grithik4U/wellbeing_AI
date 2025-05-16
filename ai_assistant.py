@@ -88,10 +88,11 @@ def generate_chatbot_response(user_input, survey_responses=None, chat_history=No
     - Self-care and wellbeing practices
     """
     
-    # Construct the messages array for the OpenAI API
-    messages = [
-        {"role": "system", "content": system_message}
-    ]
+    # Create the messages for the API
+    messages = []
+    
+    # Add system message
+    messages.append({"role": "system", "content": system_message})
     
     # Add chat history
     for message in chat_history:
@@ -158,12 +159,10 @@ def get_initial_message(survey_responses=None):
     5. Be warm, friendly and empathetic
     """
     
-    messages = [
-        {"role": "system", "content": system_message},
-        {"role": "user", "content": "I've just completed the wellbeing survey. What now?"}
-    ]
-    
-    # Convert to proper message types for the API
+    # Create messages array for the API
+    messages = []
+    messages.append({"role": "system", "content": system_message})
+    messages.append({"role": "user", "content": "I've just completed the wellbeing survey. What now?"})
     
     try:
         # the newest OpenAI model is "gpt-4o" which was released May 13, 2024.
