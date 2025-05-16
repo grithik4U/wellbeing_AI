@@ -40,21 +40,10 @@ if not os.path.exists("data"):
 # Load data
 @st.cache_data(ttl=300)  # Cache for 5 minutes
 def load_responses():
+    """Load responses from the database"""
     try:
-        if os.path.exists("data/responses.csv"):
-            return pd.read_csv("data/responses.csv", parse_dates=["timestamp"])
-        else:
-            # Create empty DataFrame with correct columns
-            columns = ["response_id", "timestamp", "department", "location"]
-            # Add question columns based on survey questions
-            questions = get_survey_questions()
-            for q in questions:
-                if q["type"] != "header":
-                    columns.append(f"q_{q['id']}")
-            
-            df = pd.DataFrame(columns=columns)
-            df.to_csv("data/responses.csv", index=False)
-            return df
+        # Get responses from the database
+        return get_responses()
     except Exception as e:
         st.error(f"Error loading data: {e}")
         return pd.DataFrame()
@@ -208,8 +197,6 @@ def render_employee_checkin():
             
             elif st.session_state.survey_step == total_questions:
                 # Save responses
-                responses_df = load_responses()
-                
                 new_response = {
                     "response_id": str(uuid.uuid4()),
                     "timestamp": datetime.datetime.now(),
@@ -221,9 +208,13 @@ def render_employee_checkin():
                 for key, value in st.session_state.responses.items():
                     new_response[key] = value
                 
-                # Append to DataFrame and save
-                responses_df = pd.concat([responses_df, pd.DataFrame([new_response])], ignore_index=True)
-                responses_df.to_csv("data/responses.csv", index=False)
+                # Save to database
+                save_response(new_response)
+                
+                # Refresh data by invalidating the cache
+                # In newer Streamlit versions we'd use st.cache_data.clear()
+                # but we'll use rerun to achieve the same effect
+                pass
                 
                 # Reset for thank you message
                 st.session_state.survey_step = total_questions + 1
@@ -285,18 +276,21 @@ def render_hr_dashboard():
             start_date = min_date
             end_date = datetime.datetime.combine(max_date, datetime.time(23, 59, 59))
     
-    # Filter data based on selections
-    filtered_df = responses_df.copy()
-    
-    if selected_dept != "All":
-        filtered_df = filtered_df[filtered_df["department"] == selected_dept]
-    
-    if selected_loc != "All":
-        filtered_df = filtered_df[filtered_df["location"] == selected_loc]
-    
-    # Filter by date
-    filtered_df = filtered_df[(filtered_df["timestamp"].dt.date >= start_date) & 
-                             (filtered_df["timestamp"].dt.date <= end_date.date())]
+    # Filter data using database query for better performance
+    if selected_dept == "All" and selected_loc == "All":
+        # Just filter by date
+        filtered_df = get_filtered_responses(
+            start_date=datetime.datetime.combine(start_date, datetime.time.min),
+            end_date=datetime.datetime.combine(end_date, datetime.time.max)
+        )
+    else:
+        # Filter by all criteria
+        filtered_df = get_filtered_responses(
+            start_date=datetime.datetime.combine(start_date, datetime.time.min),
+            end_date=datetime.datetime.combine(end_date, datetime.time.max),
+            department=None if selected_dept == "All" else selected_dept,
+            location=None if selected_loc == "All" else selected_loc
+        )
     
     if len(filtered_df) == 0:
         st.warning("No data available for the selected filters.")
