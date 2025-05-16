@@ -177,59 +177,18 @@ def render_employee_checkin():
                 submit_label = "Next Question"
         
         else:
-            # Thank you step with chatbot
+            # Thank you step
             st.success("Thank you for completing the survey!")
             st.balloons()
+            submit_label = "Start New Survey"
             
-            # Display chatbot interface
-            st.subheader("Chat with Hurdl AI Assistant")
-            st.write("Our AI assistant is here to chat about your wellbeing and provide support based on your survey responses.")
-            
-            # Initialize chat if it's the first time after survey
+            # Set flag to show chatbot after form is submitted
             if st.session_state.survey_step == total_questions + 1:
                 # Store the survey responses for the chatbot
                 st.session_state.current_survey_responses = st.session_state.responses
                 
-                # Reset chat messages
-                st.session_state.chat_messages = []
-                
-                # Add initial message from AI
-                initial_message = get_initial_message(st.session_state.current_survey_responses)
-                st.session_state.chat_messages.append({"role": "assistant", "content": initial_message})
-            
-            # Display chat messages
-            for message in st.session_state.chat_messages:
-                if message["role"] == "user":
-                    st.chat_message("user").write(message["content"])
-                else:
-                    st.chat_message("assistant", avatar="🧠").write(message["content"])
-            
-            # Chat input
-            if prompt := st.chat_input("Type your message here..."):
-                # Add user message to chat history
-                st.session_state.chat_messages.append({"role": "user", "content": prompt})
-                
-                # Display user message
-                st.chat_message("user").write(prompt)
-                
-                # Generate response
-                with st.spinner("Thinking..."):
-                    response = generate_chatbot_response(
-                        prompt, 
-                        st.session_state.current_survey_responses,
-                        [m for m in st.session_state.chat_messages if m["role"] != "system"]
-                    )
-                
-                # Add AI response to chat history
-                st.session_state.chat_messages.append({"role": "assistant", "content": response})
-                
-                # Display AI response
-                st.chat_message("assistant", avatar="🧠").write(response)
-                
-                # Rerun to update the chat display
-                st.rerun()
-            
-            submit_label = "Start New Survey"
+                # Set flag to show chatbot
+                st.session_state.show_chatbot = True
         
         # Submit button
         submitted = st.form_submit_button(submit_label)
@@ -276,9 +235,52 @@ def render_employee_checkin():
                 st.session_state.survey_step = 0
                 st.rerun()
     
-    # Show some inspirational imagery
-    st.image("https://pixabay.com/get/ga933469d2f3c1804571fb9364004d9f1a23479dbb1f9a411723cc1ed6eb9421e63bce3237089010787f794249903b9115cffcf0e1cd289fe55a75a7961316116_1280.jpg", 
-             caption="Wellness in the workplace", use_container_width=True)
+    # Show chatbot if survey was completed
+    if st.session_state.show_chatbot:
+        st.subheader("Chat with Hurdl AI Assistant")
+        st.write("Our AI assistant is here to chat about your wellbeing and provide support based on your survey responses.")
+        
+        # Initialize chat if it's empty
+        if not st.session_state.chat_messages:
+            # Add initial message from AI
+            initial_message = get_initial_message(st.session_state.current_survey_responses)
+            st.session_state.chat_messages.append({"role": "assistant", "content": initial_message})
+        
+        # Display chat messages
+        for message in st.session_state.chat_messages:
+            if message["role"] == "user":
+                st.chat_message("user").write(message["content"])
+            else:
+                st.chat_message("assistant", avatar="🧠").write(message["content"])
+        
+        # Chat input
+        if prompt := st.chat_input("Type your message here..."):
+            # Add user message to chat history
+            st.session_state.chat_messages.append({"role": "user", "content": prompt})
+            
+            # Display user message
+            st.chat_message("user").write(prompt)
+            
+            # Generate response
+            with st.spinner("Thinking..."):
+                response = generate_chatbot_response(
+                    prompt, 
+                    st.session_state.current_survey_responses,
+                    [m for m in st.session_state.chat_messages if m["role"] != "system"]
+                )
+            
+            # Add AI response to chat history
+            st.session_state.chat_messages.append({"role": "assistant", "content": response})
+            
+            # Display AI response
+            st.chat_message("assistant", avatar="🧠").write(response)
+            
+            # Rerun to update the chat display
+            st.rerun()
+    else:
+        # Show some inspirational imagery when chatbot is not shown
+        st.image("https://pixabay.com/get/ga933469d2f3c1804571fb9364004d9f1a23479dbb1f9a411723cc1ed6eb9421e63bce3237089010787f794249903b9115cffcf0e1cd289fe55a75a7961316116_1280.jpg", 
+                caption="Wellness in the workplace", use_container_width=True)
 
 def render_hr_dashboard():
     st.title("HR Wellbeing Dashboard")

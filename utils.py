@@ -19,6 +19,9 @@ def initialize_session_state():
     
     if "current_survey_responses" not in st.session_state:
         st.session_state.current_survey_responses = {}
+        
+    if "show_chatbot" not in st.session_state:
+        st.session_state.show_chatbot = False
 
 def admin_login():
     """Handle admin login functionality"""
