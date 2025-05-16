@@ -16,6 +16,7 @@ from visualization import (render_wellbeing_chart,
                            render_sentiment_chart,
                            render_workload_heatmap,
                            render_trend_alerts)
+from database import get_responses, get_filtered_responses, save_response
 
 # Set page config
 st.set_page_config(
@@ -81,7 +82,7 @@ def main():
                 admin_login()
         
         st.sidebar.image("https://pixabay.com/get/g16b831cd415041e78ecfba9a297568f21cff48e1aeb86dbf89906a21cd975e3c5a83197d60f95b27065b6b75872328c956788bffde50d82a9d5f8107fcf6d5c2_1280.jpg", 
-                         caption="Mental Wellbeing", use_column_width=True)
+                         caption="Mental Wellbeing", use_container_width=True)
     
     # Main content
     if page == "Employee Check-in":
@@ -165,19 +166,19 @@ def render_employee_checkin():
             if current_q:
                 if current_q["type"] == "scale":
                     st.write(current_q["text"])
-                    response = st.slider("", 1, 5, 3, 
+                    response = st.slider("Rating", 1, 5, 3, 
                                         help="1 = Strongly Disagree, 5 = Strongly Agree",
                                         key=f"q_{current_q['id']}")
                     st.session_state.responses[f"q_{current_q['id']}"] = response
                 
                 elif current_q["type"] == "text":
                     st.write(current_q["text"])
-                    response = st.text_area("", key=f"q_{current_q['id']}")
+                    response = st.text_area("Response", key=f"q_{current_q['id']}")
                     st.session_state.responses[f"q_{current_q['id']}"] = response
                 
                 elif current_q["type"] == "radio":
                     st.write(current_q["text"])
-                    response = st.radio("", current_q["options"], key=f"q_{current_q['id']}")
+                    response = st.radio("Options", current_q["options"], key=f"q_{current_q['id']}")
                     st.session_state.responses[f"q_{current_q['id']}"] = response
             
             if st.session_state.survey_step == total_questions:
@@ -236,7 +237,7 @@ def render_employee_checkin():
     
     # Show some inspirational imagery
     st.image("https://pixabay.com/get/ga933469d2f3c1804571fb9364004d9f1a23479dbb1f9a411723cc1ed6eb9421e63bce3237089010787f794249903b9115cffcf0e1cd289fe55a75a7961316116_1280.jpg", 
-             caption="Wellness in the workplace", use_column_width=True)
+             caption="Wellness in the workplace", use_container_width=True)
 
 def render_hr_dashboard():
     st.title("HR Wellbeing Dashboard")
@@ -247,7 +248,7 @@ def render_hr_dashboard():
     if len(responses_df) == 0:
         st.warning("No survey responses available yet. Dashboard will populate once employees complete check-ins.")
         st.image("https://pixabay.com/get/gbb40d0936787ac5d1c9b4679eed711723d4ffe8763556d1456cfebaf3d57293ab0170b4b2b4a3afe48fba98479992e95ed77f6b0ea7161a9c103bf27fe76439a_1280.jpg", 
-                 caption="Waiting for data", use_column_width=True)
+                 caption="Waiting for data", use_container_width=True)
         return
     
     # Dashboard filters
@@ -370,7 +371,7 @@ def render_hr_dashboard():
     
     # Show data visualization imagery
     st.image("https://pixabay.com/get/gb369b38f76e80fa3e95a65e4234affee5345ae73597efc76d0fba8fabb58e1c949584e77b86a5460ccdd5fc1f6bea46cb16b9630d5eaf4d48c3b5847a45ebbdc_1280.jpg", 
-             caption="Data visualization", use_column_width=True)
+             caption="Data visualization", use_container_width=True)
 
 if __name__ == "__main__":
     main()
