@@ -179,7 +179,7 @@ def render_employee_checkin():
         else:
             # Thank you step
             st.success("Thank you for completing the survey!")
-            st.balloons()
+            # Removed balloons effect
             submit_label = "Start New Survey"
             
             # Set flag to show chatbot after form is submitted
@@ -228,6 +228,7 @@ def render_employee_checkin():
                 # Reset for thank you message
                 st.session_state.survey_step = total_questions + 1
                 st.session_state.responses = {}
+                # Just rerun without balloons
                 st.rerun()
             
             else:
