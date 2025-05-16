@@ -30,7 +30,11 @@ initialize_session_state()
 
 # Create necessary folders
 if not os.path.exists("data"):
-    os.makedirs("data")
+    try:
+        os.makedirs("data")
+    except FileExistsError:
+        # Directory already exists, which is fine
+        pass
 
 # Load data
 @st.cache_data(ttl=300)  # Cache for 5 minutes
