@@ -71,6 +71,10 @@ Build wellbeing_AI from the source and intsall dependencies:
 
 1. **Clone the repository:**
 
+https://github.com/user-attachments/assets/0fb7668f-750c-4f51-a03b-f08dba63f672
+
+
+
     ```sh
     ❯ git clone https://github.com/grithik4U/wellbeing_AI
     ```
