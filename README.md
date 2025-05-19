@@ -7,7 +7,6 @@
 # WELLBEING_AI
 
 <em>Empowering workplaces through wellbeing and insightful feedback.</em>
-https://github.com/user-attachments/assets/0fb7668f-750c-4f51-a03b-f08dba63f672
 
 <!-- BADGES -->
 <img src="https://img.shields.io/github/last-commit/grithik4U/wellbeing_AI?style=flat&logo=git&logoColor=white&color=0080ff" alt="last-commit">
@@ -29,7 +28,7 @@ https://github.com/user-attachments/assets/0fb7668f-750c-4f51-a03b-f08dba63f672
 <br>
 
 ---
-
+https://github.com/user-attachments/assets/0fb7668f-750c-4f51-a03b-f08dba63f672
 ## Table of Contents
 
 - [Overview](#overview)
